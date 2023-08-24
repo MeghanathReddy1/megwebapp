@@ -3,6 +3,7 @@ pipeline{
         stages{
             stage("Checkout SCM"){
                 steps{
+                    println "checkingout"
                     git url: 'https://github.com/MeghanathReddy1/megwebapp.git', branch:'main'
                 }
             }
