@@ -1,0 +1,80 @@
+pipeline {
+    agent any
+    stages {
+        stage("Welcome") {
+            steps {
+                step([$class: 'WsCleanup'])
+                script {
+                    deleteDir()
+                    echo "Welcome to My pipeline"
+                }
+            }
+        }
+        stage("Creating Directory and files") {
+            steps {
+                script {
+                    sh '''
+                        mkdir Dir1
+                        cd Dir1
+                        touch File1 File2
+                        echo "some content" >> abcdefgh
+                    '''
+                }
+            }
+        }
+        /*stage("Simple C program") {
+            steps {
+                script {
+                    
+                    def cFilePath = "/simple.c"
+                    
+                    sh '''
+                        gcc -o simple ''' + cFilePath + '''
+                        ./simple
+                    '''
+                }
+            }
+        }*/
+        stage("Install Git") {
+            steps {
+                script {
+                    sh '''
+                        sudo apt update -y
+                        sudo apt upgrade -y
+                        sudo apt install git -y
+                    '''
+                }
+            }
+        }
+        stage("instaLL Apache "){
+            steps{
+                script{
+                    withCredentials([usernamePassword(credentialsId: 'c6246e59-9307-40d7-ac00-0f90335c69a1', passwordVariable: 'Sudo_Pass', usernameVariable: 'Sudo')]){
+                        sh '''
+                            echo $Sudo_Pass | sudo apt update -y
+                            echo $Sudo_Pass | sudo apt upgrade -y
+                            echo $Sudo_Pass | sudo apt install apache2 -y
+                        '''    
+                    }
+                }
+            }
+        }
+        stage("Push to Git"){
+            steps{
+                script{
+                    sh '''
+                        echo "pipeline { }" > Jenkinsfile.modified
+                        git config --global user.name "MeghanathReddy1"
+                        git config --global user.email "meghanathreddy070393@gmail.com"
+                        git config --global --add safe.directory /var/lib/jenkins/workspace/Pipeline_Abc
+                        git init
+                        git add .
+                        git commit -m "Update Jenkinsfile"
+                        git push origin master
+                    '''
+                }
+            }
+        }
+    }    
+}
+
